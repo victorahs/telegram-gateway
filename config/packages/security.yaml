@@ -1,0 +1,13 @@
+security:
+    # Désactivation de l'authentification pour toutes les routes
+    firewalls:
+        # La règle 'main' est utilisée pour toutes les requêtes
+        main:
+            # Le firewall accepte toutes les requêtes sans authentification
+            pattern: ^/
+            # Pas d'authentification ici
+            security: false
+
+    # Accès libre à toutes les routes
+    access_control:
+        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }

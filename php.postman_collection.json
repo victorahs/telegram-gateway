@@ -1,0 +1,41 @@
+{
+	"info": {
+		"_postman_id": "fc45f671-c9cf-44d7-8978-70d25b5e9e48",
+		"name": "php",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5411980"
+	},
+	"item": [
+		{
+			"name": "New Request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"chat_id\": \"7415484204\",\r\n  \"message\": \"Hello, this is a message!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/send-notification",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"send-notification"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
