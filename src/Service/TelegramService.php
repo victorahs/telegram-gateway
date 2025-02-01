@@ -4,18 +4,21 @@ namespace App\Service;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Predis\Client;
+use App\Service\RedisService;
+
 
 class TelegramService
 {
     private HttpClientInterface $httpClient;
     private string $botToken;
-    private $redis;
+    private Client $redis;
 
-    public function __construct(HttpClientInterface $httpClient, ParameterBagInterface $params)
+    public function __construct(HttpClientInterface $httpClient, ParameterBagInterface $params, RedisService $redisService)
     {
         $this->httpClient = $httpClient;
         $this->botToken = $params->get('telegram.bot_token');
-        $this->redis = RedisAdapter::createConnection('redis://localhost');
+        $this->redis = $redisService->getRedis();
     }
 
     public function sendMessage(array $message): bool

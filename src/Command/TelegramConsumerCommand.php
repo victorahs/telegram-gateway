@@ -8,6 +8,9 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use App\Service\TelegramService;
 use Symfony\Component\Console\Attribute\AsCommand;
+use App\Service\RedisService;
+use Predis\Client;
+
 
 #[AsCommand(
     name: 'app:consume-telegram',  // Le nom de la commande doit être défini ici
@@ -17,14 +20,14 @@ class TelegramConsumerCommand extends Command
 {
    
 
-    private $redis;
+    private Client $redis;
     private TelegramService $telegramService;
 
-    public function __construct(TelegramService $telegramService)
+    public function __construct(TelegramService $telegramService, RedisService $redisService)
     {
         parent::__construct();
         $this->telegramService = $telegramService;
-        $this->redis = RedisAdapter::createConnection('redis://localhost');
+        $this->redis = $redisService->getRedis();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

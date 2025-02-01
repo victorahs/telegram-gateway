@@ -7,15 +7,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
+use App\Service\RedisService;
+use Predis\Client;
 
 class NotificationController extends AbstractController
 {
-    private $redis;
+    private Client $redis;
 
-    public function __construct()
+    public function __construct(RedisService $redisService)
     {
         // Connexion à Redis
-        $this->redis = RedisAdapter::createConnection('redis://localhost');
+        $this->redis = $redisService->getRedis();
     }
 
     #[Route('/send-notification', methods: ['POST'])]
