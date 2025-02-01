@@ -26,28 +26,33 @@ class TelegramService
         if (!isset($message['chat_id'], $message['message'])) {
             return false;
         }
-
-        $response = $this->httpClient->request('POST', "https://api.telegram.org/bot{$this->botToken}/sendMessage", [
-            'json' => [
-                'chat_id' => $message['chat_id'],
-                'text' => $message['message'],
-            ]
-        ]);
-
-        $statusCode = $response->getStatusCode();
-        $responseData = $response->toArray(false);
-
-        if ($statusCode === 429) {
-            // Gestion du rate limit : attendre le temps recommandé
-            $retryAfter = $responseData['parameters']['retry_after'] ?? 1;
-            sleep($retryAfter);
-
-            // Réinsérer le message en file d'attente pour réessai
+    
+        try {
+            $response = $this->httpClient->request('POST', "https://api.telegram.org/bot{$this->botToken}/sendMessage", [
+                'json' => [
+                    'chat_id' => $message['chat_id'],
+                    'text' => $message['message'],
+                ]
+            ]);
+    
+            $statusCode = $response->getStatusCode();
+            $responseData = $response->toArray(false);
+    
+            if ($statusCode === 429) {
+                // Gestion du rate limit : attendre le temps recommandé
+                $retryAfter = $responseData['parameters']['retry_after'] ?? 1;
+                sleep($retryAfter);
+                $this->redis->rpush('telegram_queue', json_encode($message)); // Réinsérer en queue
+    
+                return false;
+            }
+    
+            return true;
+        } catch (\Exception $e) {
+            // Log l’erreur et réinsère le message en attente
+            error_log('Erreur envoi Telegram : ' . $e->getMessage());
             $this->redis->rpush('telegram_queue', json_encode($message));
-
             return false;
         }
-
-        return true;
     }
 }
